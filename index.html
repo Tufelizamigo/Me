@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tufelizamigo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --bg:#0d1117;--panel:#161b22;--panel-2:#1c232c;--grid:#21262d;
+    --ink:#e6edf3;--muted:#8b98a5;--purple:#9d6cff;--green:#54d96b;
+    --gold:#ffcf4a;--line:#2a313a;--discord:#5865f2;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:'Trebuchet MS','Segoe UI',system-ui,sans-serif;line-height:1.6;overflow-x:hidden}
+  .pixel{font-family:'Courier New',monospace;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+  a{color:inherit;text-decoration:none}
+
+  /* HERO */
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;padding:2rem;background:linear-gradient(135deg, rgba(157,108,255,.08), rgba(84,217,107,.06)),var(--bg)}
+  .hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(circle at 50% 40%, #000 0%, transparent 75%);opacity:.5}
+  .hero h1{font-family:'Courier New',monospace;font-size:clamp(2.6rem,9vw,6rem);font-weight:800;letter-spacing:.02em;z-index:1;background:linear-gradient(90deg,var(--purple),var(--green));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+  .hero .tag{margin-top:1rem;color:var(--muted);font-size:clamp(.9rem,2.5vw,1.15rem);z-index:1;max-width:560px}
+  .hero .tag b{color:var(--gold)}
+  .hero-cta{margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;z-index:1}
+  .btn{border:none;cursor:pointer;font-family:'Courier New',monospace;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:.8rem;padding:.85rem 1.4rem;box-shadow:4px 4px 0 rgba(0,0,0,.4);transition:transform .1s;display:inline-block}
+  .btn:active{transform:translate(4px,4px);box-shadow:none}
+  .btn-purple{background:var(--purple);color:#fff}
+  .btn-green{background:var(--green);color:#06210c}
+  .btn-gold{background:var(--gold);color:#2b1d00}
+  .btn-discord{background:var(--discord);color:#fff}
+  .scroll-hint{position:absolute;bottom:1.8rem;color:var(--muted);font-size:.75rem;z-index:1;animation:bob 1.8s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+
+  /* LAYOUT */
+  section{padding:5rem 1.5rem;max-width:1000px;margin:0 auto}
+  .eyebrow{color:var(--green);font-size:.72rem;letter-spacing:.25em;margin-bottom:.6rem}
+  h2.section-title{font-family:'Courier New',monospace;font-size:clamp(1.6rem,5vw,2.4rem);margin-bottom:2rem;border-left:5px solid var(--purple);padding-left:.8rem}
+
+  /* CARDS */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.1rem}
+  .block{background:var(--panel);border:1px solid var(--line);padding:1.3rem;position:relative;transition:transform .15s ease;box-shadow:4px 4px 0 rgba(0,0,0,.35)}
+  .block:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 rgba(0,0,0,.45)}
+  .block h3{font-size:1.05rem;margin-bottom:.35rem}
+  .block p{color:var(--muted);font-size:.9rem}
+  .block .corner{position:absolute;top:0;right:0;width:0;height:0;border-top:14px solid var(--purple);border-left:14px solid transparent}
+  .block.green .corner{border-top-color:var(--green)}
+  .block.gold .corner{border-top-color:var(--gold)}
+
+  /* ABOUT */
+  .about-wrap{display:flex;gap:2rem;flex-wrap:wrap;align-items:flex-start}
+  .about-text{flex:2;min-width:300px;color:var(--muted)}
+  .about-text p{margin-bottom:1rem}
+  .about-text b{color:var(--ink)}
+  .stats{flex:1;min-width:200px;display:flex;flex-direction:column;gap:1rem}
+  .stat{background:var(--panel-2);border:1px solid var(--line);padding:.8rem 1rem}
+  .stat .n{font-family:'Courier New',monospace;font-size:1.4rem;color:var(--gold)}
+  .stat .l{font-size:.7rem;color:var(--muted);letter-spacing:.1em}
+
+  /* SERVER */
+  .server-hero{background:linear-gradient(135deg, rgba(157,108,255,.12), rgba(84,217,107,.10)),var(--panel);border:1px solid var(--line);padding:2.5rem;box-shadow:6px 6px 0 rgba(0,0,0,.4)}
+  .server-hero h3{font-family:'Courier New',monospace;font-size:1.8rem;margin-bottom:.5rem}
+  .server-hero .sub{color:var(--muted);margin-bottom:1.6rem;max-width:520px}
+  .ip-row{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;margin-bottom:1.8rem}
+  .ip-box{font-family:'Courier New',monospace;font-size:clamp(1rem,3.5vw,1.4rem);color:var(--green);background:var(--bg);border:1px solid var(--line);padding:.6rem 1rem}
+  .copy-btn{background:var(--purple);color:#fff;border:none;padding:.7rem 1.2rem;font-family:'Courier New',monospace;font-weight:700;cursor:pointer;letter-spacing:.05em;box-shadow:3px 3px 0 rgba(0,0,0,.4);transition:transform .1s}
+  .copy-btn:active{transform:translate(3px,3px);box-shadow:none}
+  .copy-btn.copied{background:var(--green);color:#06210c}
+  .feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-top:1.6rem}
+  .feat div{background:var(--panel-2);border:1px solid var(--line);padding:1rem}
+  .feat h4{font-size:.95rem;margin-bottom:.2rem}
+  .feat p{color:var(--muted);font-size:.82rem}
+
+  /* JOIN FORM */
+  .form-wrap{background:var(--panel);border:1px solid var(--line);padding:2rem;box-shadow:6px 6px 0 rgba(0,0,0,.4)}
+  .field{margin-bottom:1.2rem}
+  .field label{display:block;font-size:.78rem;letter-spacing:.08em;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase}
+  .field input,.field textarea,.field select{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--ink);padding:.7rem .8rem;font-family:inherit;font-size:.95rem}
+  .field textarea{resize:vertical;min-height:90px}
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--purple)}
+  .form-note{color:var(--muted);font-size:.8rem;margin-top:1rem}
+  .form-note b{color:var(--gold)}
+  .embed{margin-top:1.5rem;display:none}
+  .embed.show{display:block}
+  .embed-card{background:#2b2d31;border-left:4px solid #9d6cff;border-radius:4px;padding:1rem 1.2rem;font-family:'Segoe UI',sans-serif;color:#dbdee1;max-width:480px}
+  .embed-card .et{color:#fff;font-weight:700;margin-bottom:.6rem;font-size:1.05rem}
+  .embed-card .erow{margin-bottom:.5rem;font-size:.9rem}
+  .embed-card .ek{color:#b5bac1;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+  .embed-card .ev{color:#dbdee1}
+  .embed-actions{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1rem;align-items:center}
+  .ticket-tip{color:var(--muted);font-size:.82rem;margin-top:.8rem}
+  .ticket-tip b{color:var(--green)}
+
+  /* FOOTER */
+  footer{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:.8rem;border-top:1px solid var(--line)}
+  footer .pixel{color:var(--purple)}
+  footer a{color:var(--green)}
+
+  :focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <header class="hero">
+    <h1 class="pixel">Tufelizamigo</h1>
+    <p class="tag">Home of <b>The Pure Vanilla SMP</b> and <b>tufelizteam</b>. Server admin, web tinkerer, rhythm-game enthusiast.</p>
+    <div class="hero-cta">
+      <a class="btn btn-gold" href="#about">About Me</a>
+      <a class="btn btn-green" href="#server">Join the SMP</a>
+      <a class="btn btn-purple" href="#join">Apply to tufelizteam</a>
+      <a class="btn btn-discord" href="https://discord.gg/bQMeMrjRJf" target="_blank" rel="noopener">Discord</a>
+    </div>
+    <span class="scroll-hint pixel">&#9660; scroll</span>
+  </header>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <p class="eyebrow pixel">// who is this</p>
+    <h2 class="section-title">About Me</h2>
+    <div class="about-wrap">
+      <div class="about-text">
+        <p>Hey, I'm <b>Tufelizamigo</b>. I run <b>The Pure Vanilla SMP</b> and lead <b>tufelizteam</b>. Most of my time goes into the server &mdash; setting up rank hierarchies, the economy, custom Skript tooling, and the bits of code that hold it all together.</p>
+        <p>Outside the server I'm a <b>web tinkerer</b>. I build my own projects from scratch, like <b>PureVanilla Connection</b>, a bridge that pipes our Discord chat straight into the game.</p>
+        <p>When I'm not building, I'm playing. I'm into <b>Beat Saber</b> on my standalone Quest, and I've spent a lot of hours in <b>Geometry Dash</b> &mdash; both playing levels and making my own. I like figuring out how things work and then making them better.</p>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="n">SMP</div><div class="l pixel">SERVER OWNER</div></div>
+        <div class="stat"><div class="n">TF</div><div class="l pixel">TEAM LEAD</div></div>
+        <div class="stat"><div class="n">DEV</div><div class="l pixel">WEB PROJECTS</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERESTS -->
+  <section id="interests">
+    <p class="eyebrow pixel">// my stuff</p>
+    <h2 class="section-title">What I'm Into</h2>
+    <div class="grid">
+      <div class="block green"><span class="corner"></span><h3>&#127925; Beat Saber</h3><p>Slicing blocks on standalone Quest. Always chasing a cleaner run.</p></div>
+      <div class="block gold"><span class="corner"></span><h3>&#129000; Geometry Dash</h3><p>Playing levels and building my own &mdash; custom UI, level editing, the works.</p></div>
+      <div class="block"><span class="corner"></span><h3>&#9935; Minecraft</h3><p>Running servers, messing with mods, and the occasional map art project.</p></div>
+      <div class="block green"><span class="corner"></span><h3>&#128187; Web Dev</h3><p>Hand-building tools and sites &mdash; like PureVanilla Connection.</p></div>
+    </div>
+  </section>
+
+  <!-- SERVER -->
+  <section id="server">
+    <p class="eyebrow pixel">// the main event</p>
+    <h2 class="section-title">The Pure Vanilla SMP</h2>
+    <div class="server-hero">
+      <h3 class="pixel">Pure Vanilla SMP</h3>
+      <p class="sub">A community survival server with custom ranks and a player-driven economy. Vanilla feel, quality-of-life tooling under the hood.</p>
+      <div class="ip-row">
+        <span class="ip-box" id="ip">thepurevanillasmp.mcsh.io</span>
+        <button class="copy-btn pixel" id="copyBtn" onclick="copyIP()">Copy IP</button>
+      </div>
+      <a class="btn btn-discord" href="https://discord.gg/bQMeMrjRJf" target="_blank" rel="noopener">Join our Discord</a>
+      <div class="feat">
+        <div><h4>&#9935; Ranks</h4><p>LuckPerms ladder with gradient prefixes, Owner down to Player.</p></div>
+        <div><h4>&#128176; Economy</h4><p>A player-driven economy that the community runs.</p></div>
+        <div><h4>&#128172; Chat Bridge</h4><p>PureVanilla Connection pipes Discord messages straight into the game.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOIN TEAM -->
+  <section id="join">
+    <p class="eyebrow pixel">// build with us</p>
+    <h2 class="section-title">Apply to tufelizteam</h2>
+    <div class="form-wrap">
+      <div class="field">
+        <label for="mc">Minecraft username</label>
+        <input id="mc" type="text" placeholder="e.g. Steve123">
+      </div>
+      <div class="field">
+        <label for="dc">Discord tag</label>
+        <input id="dc" type="text" placeholder="e.g. yourname">
+      </div>
+      <div class="field">
+        <label for="role">What's your specialty?</label>
+        <select id="role">
+          <option>Building</option>
+          <option>Redstone</option>
+          <option>PvP</option>
+          <option>Coding</option>
+          <option>Something else</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="why">Why do you want to join? (a sentence or two)</label>
+        <textarea id="why" placeholder="Tell me a bit about yourself and what you'd bring."></textarea>
+      </div>
+      <button class="btn btn-purple pixel" onclick="buildApp()">Build my application</button>
+
+      <div class="embed" id="embed">
+        <div class="embed-card" id="embedCard">
+          <div class="et">tufelizteam application</div>
+          <div class="erow"><div class="ek">Minecraft</div><div class="ev" id="o-mc"></div></div>
+          <div class="erow"><div class="ek">Discord</div><div class="ev" id="o-dc"></div></div>
+          <div class="erow"><div class="ek">Specialty</div><div class="ev" id="o-role"></div></div>
+          <div class="erow"><div class="ek">Why</div><div class="ev" id="o-why"></div></div>
+        </div>
+        <div class="embed-actions">
+          <button class="btn btn-green pixel" id="copyTextBtn" onclick="copyText()">Copy text</button>
+          <button class="btn btn-gold pixel" id="copyImgBtn" onclick="copyImage()">Copy image</button>
+          <a class="btn btn-discord" href="https://discord.gg/bQMeMrjRJf" target="_blank" rel="noopener">Open Discord</a>
+        </div>
+        <p class="ticket-tip">Jump into the Discord, <b>open a ticket</b>, and paste your application in. Text is easiest to read &mdash; the image is just for looks.</p>
+      </div>
+
+      <p class="form-note">Fill it out, hit build, then copy and <b>paste it into a ticket on our Discord.</b></p>
+    </div>
+  </section>
+
+  <footer>
+    Built block by block by <span class="pixel">Tufelizamigo</span> &amp; tufelizteam.<br>
+    <a href="https://discord.gg/bQMeMrjRJf" target="_blank" rel="noopener">discord.gg/bQMeMrjRJf</a>
+  </footer>
+
+<script>
+  function copyIP(){
+    var ip=document.getElementById('ip').textContent.trim();
+    var btn=document.getElementById('copyBtn');
+    navigator.clipboard.writeText(ip).then(function(){
+      btn.textContent='Copied!';btn.classList.add('copied');
+      setTimeout(function(){btn.textContent='Copy IP';btn.classList.remove('copied');},1600);
+    }).catch(function(){btn.textContent='Copy failed';setTimeout(function(){btn.textContent='Copy IP';},1600);});
+  }
+
+  var lastApp='';
+  function buildApp(){
+    var mc=document.getElementById('mc').value.trim()||'(not given)';
+    var dc=document.getElementById('dc').value.trim()||'(not given)';
+    var role=document.getElementById('role').value;
+    var why=document.getElementById('why').value.trim()||'(not given)';
+    document.getElementById('o-mc').textContent=mc;
+    document.getElementById('o-dc').textContent=dc;
+    document.getElementById('o-role').textContent=role;
+    document.getElementById('o-why').textContent=why;
+    lastApp='**tufelizteam application**\n'+
+      '> **Minecraft:** '+mc+'\n'+
+      '> **Discord:** '+dc+'\n'+
+      '> **Specialty:** '+role+'\n'+
+      '> **Why:** '+why;
+    var e=document.getElementById('embed');
+    e.classList.add('show');
+    e.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  function flash(btn,txt,orig){
+    btn.textContent=txt;
+    setTimeout(function(){btn.textContent=orig;},1600);
+  }
+
+  function copyText(){
+    var btn=document.getElementById('copyTextBtn');
+    navigator.clipboard.writeText(lastApp).then(function(){
+      flash(btn,'Copied!','Copy text');
+    }).catch(function(){alert("Couldn't auto-copy. Here it is:\n\n"+lastApp);});
+  }
+
+  function copyImage(){
+    var btn=document.getElementById('copyImgBtn');
+    var card=document.getElementById('embedCard');
+    btn.textContent='Working...';
+    html2canvas(card,{backgroundColor:'#2b2d31',scale:2}).then(function(canvas){
+      canvas.toBlob(function(blob){
+        if(!blob){flash(btn,'Failed','Copy image');return;}
+        if(navigator.clipboard && window.ClipboardItem){
+          navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(function(){
+            flash(btn,'Copied!','Copy image');
+          }).catch(function(){downloadBlob(blob,btn);});
+        }else{
+          downloadBlob(blob,btn);
+        }
+      });
+    }).catch(function(){flash(btn,'Failed','Copy image');});
+  }
+
+  function downloadBlob(blob,btn){
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;a.download='tufelizteam-application.png';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    flash(btn,'Downloaded!','Copy image');
+  }
+</script>
+</body>
+</html>
